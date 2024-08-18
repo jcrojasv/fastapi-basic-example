@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional
 
@@ -5,6 +6,8 @@ class ContractBase(BaseModel):
     name: Optional[str] = None
     nature: Optional[str] = None
     project: Optional[str] = None
+    path: Optional[str] = None
+    created_at: Optional[datetime] = None
 
 class ContractCreate(ContractBase):
     pass

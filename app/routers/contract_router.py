@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from schemas import contract_schema
@@ -17,7 +18,13 @@ def get_contracts(
     db: Session = Depends(database.get_db),
 ):
     repo = repository.ContractRepository(db)
-    contracts, total = repo.get_contracts(name=name, nature=nature, project=project, page=page, page_size=page_size)
+    contracts, total = repo.get_contracts(
+        name=name,
+        nature=nature,
+        project=project,
+        page=page,
+        page_size=page_size
+    )
 
     return {
         "data": contracts,
