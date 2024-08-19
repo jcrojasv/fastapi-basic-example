@@ -1,8 +1,9 @@
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 class ContractBase(BaseModel):
+    id: Optional[int] = None
     name: Optional[str] = None
     nature: Optional[str] = None
     project: Optional[str] = None
@@ -27,3 +28,11 @@ class PaginationMeta(BaseModel):
 class ContractListResponse(BaseModel):
     data: list[Contract]
     meta: PaginationMeta
+
+class ContractSearchParams(BaseModel):
+    search: Optional[str] = None
+    name: Optional[str] = None
+    nature: Optional[str] = None
+    project: Optional[str] = None
+    page: int = Field(default=1, ge=1)
+    page_size: int = Field(default=10, ge=1, le=100)

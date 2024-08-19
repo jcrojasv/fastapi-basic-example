@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from config.database import SessionLocal
 from models import contract_model
 from contextlib import contextmanager
+from schemas.contract_schema import ContractSearchParams
 
 @contextmanager
 def get_db_session():
@@ -16,17 +17,25 @@ class ContractRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_contracts(self, name: str = None, nature: str = None, project: str = None, page: int = 1, page_size: int = 10):
+    def get_contracts(self, params: ContractSearchParams):
         query = self.db.query(contract_model.Contract)
 
-        if name:
-            query = query.filter(contract_model.Contract.name.like(f"%{name}%"))
-        if nature:
-            query = query.filter(contract_model.Contract.nature.like(f"%{nature}%"))
-        if project:
-            query = query.filter(contract_model.Contract.project.like(f"%{project}%"))
+        if params.search:
+            search_term = f"%{params.search}%"
+            query = query.filter(
+                contract_model.Contract.name.like(search_term) |
+                contract_model.Contract.nature.like(search_term) |
+                contract_model.Contract.project.like(search_term)
+            )
+
+        if params.name:
+            query = query.filter(contract_model.Contract.name.like(f"%{params.name}%"))
+        if params.nature:
+            query = query.filter(contract_model.Contract.nature.like(f"%{params.nature}%"))
+        if params.project:
+            query = query.filter(contract_model.Contract.project.like(f"%{params.project}%"))
 
         total = query.count()
-        contracts = query.offset((page - 1) * page_size).limit(page_size).all()
+        contracts = query.offset((params.page - 1) * params.page_size).limit(params.page_size).all()
 
         return contracts, total
