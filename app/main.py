@@ -1,7 +1,9 @@
+import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers import contract_router as contracts
 from config.database import Base, engine
+
 
 Base.metadata.create_all(bind=engine)
 
@@ -16,3 +18,6 @@ app.add_middleware(
 )
 
 app.include_router(contracts.router, prefix="/api/v1")
+
+logger = logging.getLogger(__name__)
+logger.info("Application started")

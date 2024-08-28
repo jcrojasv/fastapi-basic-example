@@ -1,23 +1,24 @@
 from datetime import datetime
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 
 class ContractBase(BaseModel):
-    id: Optional[int] = None
-    name: Optional[str] = None
-    nature: Optional[str] = None
-    project: Optional[str] = None
+    name: str
+    nature: str
+    project: str
     path: Optional[str] = None
     created_at: Optional[datetime] = None
 
 class ContractCreate(ContractBase):
     pass
 
-class Contract(ContractBase):
+class ContractResponse(ContractBase):
     id: int
+    created_at: datetime
 
     class Config:
         orm_mode = True
+        from_attributes = True
 
 class PaginationMeta(BaseModel):
     page: int
@@ -26,7 +27,7 @@ class PaginationMeta(BaseModel):
     total_pages: int
 
 class ContractListResponse(BaseModel):
-    data: list[Contract]
+    data: List[ContractResponse]
     meta: PaginationMeta
 
 class ContractSearchParams(BaseModel):

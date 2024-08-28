@@ -5,7 +5,7 @@ from config.database import Base
 class Contract(Base):
     __tablename__ = 'contracts'
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String(255), index=True)
     nature = Column(String(255), index=True)
     project = Column(String(255), index=True)
