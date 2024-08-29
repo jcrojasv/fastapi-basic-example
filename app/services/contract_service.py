@@ -1,12 +1,13 @@
+import uuid
+import logging
+from fastapi import UploadFile, HTTPException
 from sqlalchemy.orm import Session
+from botocore.exceptions import ClientError
+from config.aws import s3_client, AWS_S3_BUCKET
 from schemas.contract_schema import ContractCreate, ContractResponse
 from models.contract_model import Contract as ContractModel
 from repositories.contract_repository import ContractRepository
-from config.aws import s3_client, AWS_S3_BUCKET
-from fastapi import UploadFile, HTTPException
-from botocore.exceptions import ClientError
-import logging
-import uuid
+from schemas.contract_schema import ContractSearchParams
 
 
 class ContractService:
@@ -14,6 +15,16 @@ class ContractService:
         self.db = db
         self.repository = ContractRepository(db)
         self.logger = logging.getLogger(__name__)
+
+
+    def get_contracts(self, params: ContractSearchParams):
+        try:
+            self.logger.info(f"[ContractService] Getting contracts with params: {params}")
+            contracts, total = self.repository.get_contracts(params)
+            return contracts, total
+        except Exception as e:
+            self.logger.error("[ContractService] An error occurred while fetching contracts", exc_info=True)
+            raise HTTPException(status_code=500, detail="An error occurred while fetching contracts")
 
 
     def create_contract_with_file(self, contract_data: ContractCreate, file: UploadFile) -> ContractResponse:
